@@ -39,14 +39,20 @@ def getLiveTime(setfilevals):
 def getDeadTime(setfilevals):
   return getTripleTime(setfilevals,325)
 
+def get(setfilevals, val):
+  return setfilevals[getPolarisKeyNumber(val)]
 
 def getRunTask(setfilevals):
   return setfilevals[getPolarisKeyNumber('RUNTASK')]
 
+def getPeakSep(setfilevals):
+  return setfilevals[getPolarisKeyNumber('PEAKSEP0')]
 
 def getPolarisKeyNumber(par):
   pvd = getPolarisVarDict()
   return int(pvd[par])
+
+
 
 def getAllPairs(setfilevals):
   dicto = getPolarisVarDict()
