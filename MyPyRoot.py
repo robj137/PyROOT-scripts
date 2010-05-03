@@ -1,16 +1,58 @@
 #!/usr/bin/python
 
-import math
 import ROOT
+ROOT.gApplication.ExecuteFile("~/rootlogon.C")
+import math
 import sys
 import os
 
+def accessCommandLine(): # for use in scripts
+  input = raw_input('ROOT: ')
+  ROOT.gROOT.ProcessLine(input)
 
-ROOT.gApplication.ExecuteFile("~/rootlogon.C")
-ROOT.gROOT.ProcessLine(
-"struct energyC {\
-  Double_t    fEnergyCal;\
-};" );
+
+def typicalInput():
+  input = raw_input('a(ccess root), q(uit), w(rite), p(rint), m(ore)')
+  if input == 'q':
+    return 0
+  if input == 'a':
+    accessCommandLine()
+  if input == 'p':
+    input2 = raw_input('~/Desktop/InvaderZim.pdf or pick ur own: ')
+    if len(input2) > 0:
+      filename = input2
+    else:
+      filename = '~/Desktop/InvaderZim.pdf'
+    aCanvas = ROOT.gROOT.FindObject('c1')
+    if(aCanvas):
+      if(aCanvas.InheritsFrom("c1")):
+        aCanvas.Print(filename)
+        return 1
+    return -1 # fail!
+
+
+def makeMCAHistFromChain(aChain):
+  #assumes that energy is fEnergy
+  aChain.Draw('fEnergy>>h1(65536,0,65536)')
+  h1 = ROOT.gROOT.Get('h1')
+  return h1
+
+def getChainFromList(aFilelist, chainName):
+  aChain = ROOT.TChain(chainName)
+  for entry in aFilelist:
+    aChain.AddFile(entry)
+  return aChain
+
+def getDateFromString(aString):
+  #first 4 digits are year
+  year = aString[0:4]
+  if aString.find('-') >-1:
+    month = aString[5:7]
+    day = aString[8:10]
+  else:
+    month = aString[4:6]
+    day = aString[6:8]
+  return year, month, day
 
 def getMCASumHist(fileName, datasetName):
   x_min = 0
@@ -597,6 +639,3 @@ def getBackgroundIntegral(f1,a,b):
   return A*(b-a) + 0.5*B*(b*b-a*a) + (C/3)*(b*b*b-a*a*a)
 
 
-def accessCommandLine():
-  input = raw_input('ROOT: ')
-  ROOT.gROOT.ProcessLine(input)
